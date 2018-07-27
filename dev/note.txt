@@ -1,0 +1,7 @@
+npm i sha256 --save
+npm i express --save
+npm i nodemon --save
+npm i body-parser --save
+npm i uuid --save
+npm i request-promise --save
+npm install request --save 
