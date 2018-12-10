@@ -9,7 +9,9 @@
     "node_2": "nodemon --watch dev -e js dev/networkNode.js 3002 http://localhost:3002",
     "node_3": "nodemon --watch dev -e js dev/networkNode.js 3003 http://localhost:3003",
     "node_4": "nodemon --watch dev -e js dev/networkNode.js 3004 http://localhost:3004",
-    "node_5": "nodemon --watch dev -e js dev/networkNode.js 3005 http://localhost:3005"
+    "node_5": "nodemon --watch dev -e js dev/networkNode.js 3005 http://localhost:3005",
+    "node_6": "nodemon --watch production -e js dev/networkNode.js 3006 http://localhost:3006",
+    "node_7": "nodemon --watch dev -e js dev/networkNode.js 3007 http://localhost:3007",
   },
   "author": "",
   "license": "ISC",
@@ -23,3 +25,4 @@
     "uuid": "^3.3.2"
   }
 }
+dev/networkNode.js 3002 http://13.229.154.38:3002

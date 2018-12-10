@@ -10,27 +10,7 @@
 </head>
 
 <body ng-app="BlockExplorer">
-     <nav class="navbar navbar-toggleable-md navbar-inverse bg-inverse mb-4" style="background-color: #6c757d!important; padding-left: 100px;">
-       <div class="">
-            <a class="navbar-brand"><img width="80px" src="https://raw.githubusercontent.com/zulnemekh/zulnemekh.github.io/master/images/unimedia-token-logo.png"></a>
-        </div>                       
-    </nav>
-
     <div class="container" ng-controller="MainController">
-      <div class="row">
-           <div class="card text-black bg-success mb-3" style="max-width: 15rem; margin: 5px;"  ng-repeat="block in bloks">
-            <div class="card-header"><span><strong>{{block.index}}</strong></span></div>
-              <div class="card-body">                
-                <span><strong>previousBlockHash: </strong> </span>
-                <input type="text" name="block" ng-style="set_color_block(block.index)" value="{{block.previousBlockHash}}" readonly>
-                <span><strong>block hash: </strong> </span>
-                <input type="text" name="block" ng-style="set_color_block1(block.index)" value="{{block.hash}}" readonly>
-              </div>
-            </div> 
-
-        </div>
-
-
         <div class="row">
             <div class="col-md-8 offset-md-2">
                 <h1 id="page-title">Block Explorer</h1>
@@ -38,23 +18,19 @@
         </div>
         <div class="row">
             <div class="col-md-6 offset-md-3">
-                <form ng-submit="search(searchValue)">
+                <form ng-submit="search(btcValue,addressValue)">
                     <div class="form-group">
-                        <input type="text" class="form-control" ng-model="searchValue">
+                        <input type="number" class="form-control" placeholder="value" ng-model="btcValue">
                     </div>
                     <div class="form-group">
-                        <select class="form-control" ng-model="searchType">
-                            <option value="block">Block Hash</option>
-                            <option value="transaction">Transaction ID</option>
-                            <option value="address">Address</option>
-                        </select>
+                        <input type="text" class="form-control" placeholder="address" ng-model="addressValue">
                     </div>
                     <button
                         type="submit"
                         class="btn btn-primary margin-auto btn-search">
                             Search
                     </button>
-                    <p ng-if="!block && !transaction && !addressData && initialSearchMade" class="no-data-text">
+                    <p ng-if="!amount && !recipient && !sender && initialSearchMade" class="no-data-text">
                         No data found for search.
                     </p>
                 </form>
@@ -141,46 +117,52 @@
     </div>
 
     <script>
-        var aa;
         window.app = angular.module('BlockExplorer', []);
+      
 
         app.controller('MainController', function($scope, $http) {
-            $scope.blockchain_info = null;
-            $scope.bloks = null;
-            $scope.last_block = null;
-            $scope.block = null;
-            $scope.transaction = null;
-            $scope.addressData = null;
+            $scope.amount = null;
+            $scope.recipient = null;
+            $scope.sender = null;
             $scope.initialSearchMade = false;
 
-             $http.get(`/blockchain_info`)
+            
+            $scope.toTransaction = function(btcValue, addressValue) {
+                                
+                 var postData = JSON.stringify({
+                        amount: btcValue,
+                        recipient: addressValue,
+                        sender: 'zuk'
+                      });
+                 
+                  var config = {
+                        headers : {
+                           'Content-Type': ['application/json']
+                        }
+                    }
+                  
+                $http.post(`/transaction/broadcast`,
+                      postData, config)
                 .then(response => {
-                    $scope.blockchain_info = response.data;
-                    length = $scope.blockchain_info.bitcoin.chain.length;
-                    $scope.bloks = $scope.blockchain_info.bitcoin.chain;
-                    $scope.bloks=$scope.bloks.slice(length - 5);
-                    bb=$scope.bloks.reverse();
-                    aa=response.data;
-                    $scope.last_block = $scope.blockchain_info.bitcoin.chain[$scope.blockchain_info.bitcoin.chain.length-1].index
-                    // aa.bitcoin.chain[aa.bitcoin.chain.length -1 ].index
-                    console.log($scope.blockchain_info);
-                });
 
-            $scope.fetchBlock = function(blockHash) {
-                $http.get(`/block/${blockHash}`)
-                .then(response => {
-                    $scope.block = response.data.block;
-                    $scope.transaction = null;
-                    $scope.addressData = null;
-                });
-            };
+                    console.log(response.data)
+                        // if (btcValue < 100) {
+                        //     btcValue = btcValue + 1;
+                        //     console.log(btcValue);
+                        //     $scope.toTransaction(btcValue, addressValue);
 
-            $scope.fetchTransaction = function(transactionId) {
-                $http.get(`/transaction/${transactionId}`)
-                .then(response => {
-                    $scope.transaction = response.data.transaction;
-                    $scope.block = null;
-                    $scope.addressData = null;
+                        // } else {
+                        //     limit = 0;
+                        //      $http.get(`http://13.229.154.38:3001/mine`)
+                        //     .then(response => {
+                        //        btcValue = 1;
+                        //        if (limit < 100) {
+                        //         limit++;
+                        //         $scope.toTransaction(btcValue, addressValue);
+                        //        }
+                        //     });
+                        // }
+
                 });
             };
 
@@ -195,31 +177,12 @@
                 });
             };
 
-            $scope.search = function(searchValue) {
+            $scope.search = function(btcValue, addressValue) {
                 $scope.initialSearchMade = true;
-                if ($scope.searchType === 'block') {
-                    $scope.fetchBlock(searchValue);
-                }
-                else if ($scope.searchType === 'transaction') {
-                    $scope.fetchTransaction(searchValue);
-                }
-                else if ($scope.searchType === 'address') {
-                    $scope.fetchAddressData(searchValue);
-                }
+                $scope.toTransaction(btcValue, addressValue);
+                
+                
             };
-
-            $scope.set_color_block = function (arg) {
-                  if (arg % 2 == 0) 
-                    return { color: "green" }
-                  else
-                    return { color: "red" }           
-            }
-            $scope.set_color_block1 = function (arg) {
-                  if (arg % 2 != 0) 
-                    return { color: "green" }
-                  else
-                    return { color: "red" }           
-            }
 
         });
     </script>

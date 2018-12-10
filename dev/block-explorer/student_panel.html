@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Block Explorer</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.6/angular.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+    <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+</head>
+
+<body ng-app="BlockExplorer">
+
+    <nav class="navbar navbar-toggleable-md navbar-inverse bg-inverse mb-4" style="background-color: #6c757d!important; padding-left: 100px;">
+       <div class="">
+        	<a class="navbar-brand"><img width="80px" src="https://raw.githubusercontent.com/zulnemekh/zulnemekh.github.io/master/images/unimedia-token-logo.png"></a>
+        </div>	                	 
+    </nav>
+
+    <div class="container" ng-controller="MainController">
+        <div class="row">
+            <div class="col-md-8 offset-md-2">
+                <h1 id="page-title">Student ledger</h1>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6 offset-md-3">
+                <form ng-submit="search(addressValue)">
+                    <div class="form-group">
+                        <input type="text" class="form-control" placeholder="address" ng-model="addressValue">
+                    </div>
+                    <button
+                        type="submit"
+                        class="btn btn-primary margin-auto btn-search">
+                            Check ledger
+                    </button>
+                    <p ng-if="!user_info && initialSearchMade" class="no-data-text">
+                        No data found for search.
+                    </p>
+                </form>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-10 offset-md-1">
+
+                <!-- 'display block' table -->
+                <h3 class="table-title" ng-if="user_info">Info {{ user_info.role }}</h3>
+                <table class="table table-striped" ng-if="user_info">
+                    <tbody>
+                        <tr>
+                            <td class="bold">Full name</td>
+                            <td>{{ user_info.full_name }}</td>
+                        </tr>
+                        <tr>
+                            <td class="bold">Last name </td>
+                            <td>{{  user_info.last_name  }}</td>
+                        </tr>
+                        <tr>
+                            <td class="bold">Birthday</td>
+                            <td>{{ user_info.birthday }}</td>
+                        </tr>
+                        <tr>
+                            <td class="bold">Role</td>
+                            <td>{{ user_info.role }}</td>
+                        </tr>
+                        <tr>
+                            <td class="bold">Description</td>
+                            <td>{{user_info.description  }}</td>
+                        </tr>                        
+                    </tbody>
+                </table>
+	
+              
+
+                <!-- 'display address' table -->
+                <table class="table table-striped" ng-if="addressData.data.userData && addressData.data.userData.length != 0">
+                    <thead>
+                        <tr>
+                            <th scope="col">Title</th>
+                            <th scope="col">Teacher</th>
+                            <th scope="col">Date</th>
+                            <th scope="col">Credit Hour</th>                            
+                            <th scope="col">Point</th>
+                            <th scope="col">Grade state</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="item in addressData.data.userData">
+                            <td>{{ item.subject_name }}</td>
+                            <td>{{ item.teacher_name }}</td>
+                            <td>{{ item.date |date:'medium' }}</td>
+                            <td>{{ item.credit_hour }}</td>
+                            <td>{{ item.grade_point }}%</td>
+                            <td ng-style="set_color_grade(item.grade_state)">{{ item.grade_state }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <!-- end 'display address' table -->
+
+            </div>
+        </div>
+    </div>
+
+    <script>
+        window.app = angular.module('BlockExplorer', []);
+      
+
+        app.controller('MainController', function($scope, $http) {
+            $scope.user_info = null;
+            $scope.addressData = null;
+            $scope.initialSearchMade = false;
+ 			
+            
+            $scope.toTransaction = function(user_id) {
+                $http.get(`/user/${user_id}`)
+                .then(response => {
+                    $scope.addressData = response.data;
+                    $scope.user_info = response.data.userData.userData;
+                    console.log($scope.addressData.data.userData);
+                });
+
+            };
+       
+
+            $scope.search = function(addressValue) {
+            	$scope.initialSearchMade = true;
+                $scope.toTransaction(addressValue);
+            };
+
+            $scope.set_color_grade = function (arg) {
+				  if (arg == 'pass') 
+				    return { color: "green" }
+				  else
+				  	return { color: "red" }			  
+			}
+
+        });
+   
+    </script>
+
+    <style type="text/css">
+        html, body {
+            min-height: 100vh;
+            background-color: #e8e8e8;
+        }
+        .container {
+            padding-top: 50px;
+            padding-bottom: 50px;
+        }
+        #page-title {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        .table-title {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .table {
+            background-color: #ffffff;
+            box-shadow: 2px 2px 15px -3px rgba(0,0,0,0.75);
+        }
+        #balance-text {
+            text-align: center;
+            margin-top: -20px;
+            margin-bottom: 30px;
+        }
+        .margin-auto {
+            margin: auto;
+            display: block;
+        }
+        .btn-search {
+            margin-bottom: 50px;
+        }
+        .bold {
+            font-weight: 700;
+        }
+        .no-data-text {
+            color: red;
+            text-align: center;
+        }
+    </style>
+
+
+</body>
+
+</html>

@@ -6,7 +6,9 @@ npm i uuid --save
 npm i request-promise --save
 npm install request --save
 
-
+//start command: npm run node_1 
+// see which port is running: sudo netstat -lpn |grep :3001
+//kill listening port 3001 command: sudo kill `sudo lsof -t -i:3001`
 
 
 {

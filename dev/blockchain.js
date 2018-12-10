@@ -30,11 +30,65 @@ Blockchain.prototype.getLastBlock = function() {
 	return this.chain[this.chain.length -1];
 };
 
+Blockchain.prototype.getBlockchainInfo = function() {
+	return this.chain;
+};
+
 Blockchain.prototype.createNewTransaction = function(amount, sender, recipient) {
 	const newTransaction = {
 		amount: amount,
 		sender: sender,
 		recipient: recipient,
+		transactionId: uuid().split('-').join('')
+	};
+
+	return newTransaction;
+
+};
+
+// create an institution
+Blockchain.prototype.createNewTransactionInst = function(institution, description, division) {
+	const newTransaction = {
+		institution: institution,
+		description: description,
+		division: division,
+		transactionId: uuid().split('-').join('')
+	};
+
+	return newTransaction;
+
+};
+
+// create a grade
+Blockchain.prototype.createNewTransactionGrade = function(user_id, credit_hour, grade_point, grade_state, teacher_name, subject_name, date) {
+	const user_id_hash = sha256(user_id);
+	const newTransaction = {
+		user_id: user_id_hash,
+		credit_hour: credit_hour, 
+		grade_point: grade_point,
+		grade_state: grade_state,
+		teacher_name: teacher_name,
+		subject_name: subject_name,
+		date: date,
+		transactionId: uuid().split('-').join('')
+	};
+
+	return newTransaction;
+
+};
+
+// create a user
+Blockchain.prototype.createNewTransactionUser = function(full_name, last_name, birthday, role, user_name, user_id, description) {
+	const user_name_hash = sha256(user_name);
+	const user_id_hash = sha256(user_id);
+	const newTransaction = {
+		full_name: full_name,
+		last_name: last_name,
+		birthday: birthday,
+		role: role,
+		user_hash: user_name_hash,
+		user_id_hash: user_id_hash,
+		description: description,
 		transactionId: uuid().split('-').join('')
 	};
 
@@ -141,6 +195,55 @@ Blockchain.prototype.getAddressData = function(address) {
 	return {
 		addressTransactions: addressTransactions,
 		addressBalance: balance
+	};
+};
+
+Blockchain.prototype.getInstitution = function() {
+	const addressTransactions = [];
+	this.chain.forEach(block => {
+		block.transactions.forEach(transaction => {
+			if(typeof transaction.institution != 'undefined'){
+				addressTransactions.push(transaction);
+			}
+		});
+	});
+
+	
+	return {
+		addressTransactions: addressTransactions		
+	};
+};
+
+Blockchain.prototype.hashLogin = function(user_key) {
+	const hash = sha256(user_key);
+	return hash;
+};
+
+Blockchain.prototype.getUserData = function(user_id_hash){
+	const userData = [];
+	this.chain.forEach(block => {
+		block.transactions.forEach(transaction => {
+			if (transaction.user_id === user_id_hash) {
+				userData.push(transaction);
+			}
+		});
+	});
+	return {
+		userData
+	};
+};
+
+Blockchain.prototype.getUserInfo = function(user_id_hash){
+	let userData = null;
+	this.chain.forEach(block => {
+		block.transactions.forEach(transaction => {
+			if (transaction.user_id_hash === user_id_hash) {
+				userData=transaction;
+			}
+		});
+	});
+	return {
+		userData
 	};
 };
 

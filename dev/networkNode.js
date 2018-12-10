@@ -21,13 +21,14 @@ app.get('/blockchain', function (req, res) {
 app.post('/transaction', function(req, res){
 	console.log('/transaction');
 	const newTransaction = req.body;
+	console.log(newTransaction);
 	const blockIndex = bitcoin.addTransactionToPendingTransactions(newTransaction);
 	// const blockIndex = bitcoin.createNewTransaction(req.body.amount, req.body.sender, req.body.recipient);
 	res.json({ note: `Transaction will be added in block ${blockIndex}.`});
 })
 
 app.post('/transaction/broadcast', function(req, res) {
-	console.log(bitcoin.networkNodes);
+	console.log(req.body);
 	const newTransaction = bitcoin.createNewTransaction(req.body.amount, req.body.sender, req.body.recipient);
 	bitcoin.addTransactionToPendingTransactions(newTransaction);
 
@@ -48,6 +49,71 @@ app.post('/transaction/broadcast', function(req, res) {
 	});
 })
 
+app.post('/transaction/broadcast/create_user', function(req, res) {
+	console.log(req.body);
+	const newTransaction = bitcoin.createNewTransactionUser(req.body.full_name, req.body.last_name, req.body.birthday, req.body.role, req.body.user_name, req.body.user_id, req.body.description);
+	bitcoin.addTransactionToPendingTransactions(newTransaction);
+
+	const requestPromises = [];
+	bitcoin.networkNodes.forEach(networkNodeUrl => {
+		const requestOptions = {
+			uri: networkNodeUrl + '/transaction',
+			method: 'POST',
+			body: newTransaction,
+			json: true
+		};
+
+		requestPromises.push(rp(requestOptions));
+	});
+
+	Promise.all(requestPromises).then(data => {
+		res.json({note: 'Transaction created and broadcast successfully.'});
+	});
+})
+
+app.post('/transaction/broadcast/create_grade', function(req, res) {
+	console.log(req.body);
+	const newTransaction = bitcoin.createNewTransactionGrade(req.body.user_id, req.body.credit_hour, req.body.grade_point, req.body.grade_state, req.body.teacher_name, req.body.subject_name, req.body.date);
+	bitcoin.addTransactionToPendingTransactions(newTransaction);
+
+	const requestPromises = [];
+	bitcoin.networkNodes.forEach(networkNodeUrl => {
+		const requestOptions = {
+			uri: networkNodeUrl + '/transaction',
+			method: 'POST',
+			body: newTransaction,
+			json: true
+		};
+
+		requestPromises.push(rp(requestOptions));
+	});
+
+	Promise.all(requestPromises).then(data => {
+		res.json({note: 'Transaction created and broadcast successfully.'});
+	});
+})
+
+app.post('/transaction/broadcast/institution', function(req, res) {
+	console.log(req.body);
+	const newTransaction = bitcoin.createNewTransactionInst(req.body.institution, req.body.description, req.body.division);
+	bitcoin.addTransactionToPendingTransactions(newTransaction);
+
+	const requestPromises = [];
+	bitcoin.networkNodes.forEach(networkNodeUrl => {
+		const requestOptions = {
+			uri: networkNodeUrl + '/transaction',
+			method: 'POST',
+			body: newTransaction,
+			json: true
+		};
+
+		requestPromises.push(rp(requestOptions));
+	});
+
+	Promise.all(requestPromises).then(data => {
+		res.json({note: 'Transaction created and broadcast successfully.'});
+	});
+})
 //mine a block
 app.get('/mine', function(req, res) {
 	const lastBlock = bitcoin.getLastBlock();
@@ -240,13 +306,72 @@ app.get('/address/:address', function(req, res) {
 
 });
 
+app.get('/institutions', function(req, res) {	
+	const addressData = bitcoin.getInstitution();
+	res.json({
+		addressData: addressData
+	});
+
+});
+
+app.get('/sha256/:address', function(req, res) {	
+	const address = req.params.address;
+	const hash = bitcoin.hashLogin(address);
+	res.json({
+		addressData: hash
+	});
+
+});
+
+app.get('/user/:user_id', function(req, res) {	
+	const user_id = req.params.user_id;	
+	const user_id_hash = bitcoin.hashLogin(user_id);
+	const data = bitcoin.getUserData(user_id_hash);
+	const userData = bitcoin.getUserInfo(user_id_hash);
+	res.json({
+		data: data,
+		userData: userData
+	});
+
+});
+
+app.get('/user_id_hash/:user_id', function(req, res) {	
+	const user_id = req.params.user_id;	
+	const user_id_hash = bitcoin.hashLogin(user_id);
+	const userData = bitcoin.getUserInfo(user_id_hash);
+	res.json({		
+		userData
+	});
+
+});
+
+app.get('/blockchain_info', function(req, res) {		
+	res.json({
+		bitcoin
+	});
+
+});
 
 app.get('/block-explorer', function(req, res) {
 	res.sendFile('./block-explorer/index.html', { root: __dirname });
 });
 
+app.get('/create-trx', function(req, res) {
+	res.sendFile('./block-explorer/create.html', { root: __dirname });
+});
 
+app.get('/create-ledger', function(req, res) {
+	res.sendFile('./block-explorer/create_ledger.html', { root: __dirname });
+});
 
+app.get('/panel', function(req, res) {
+	res.sendFile('./block-explorer/student_panel.html', { root: __dirname });
+});
+app.get('/bet', function(req, res) {
+	res.sendFile('./block-explorer/bet.html', { root: __dirname });
+});
+
+app.use(express.static(__dirname + '/public'));
 
 app.listen(port, function() {
 	console.log(`Listening on port ${port}...`);
