@@ -1,2 +1,16 @@
 http://localhost:3001/consensus
 	-
+
+(sleep 10 && curl http://13.229.154.38:3007/mine) &
+(sleep 20 && curl http://13.229.154.38:3007/mine) &
+(sleep 30 && curl http://13.229.154.38:3007/mine) &
+(sleep 40 && curl http://13.229.154.38:3007/mine) &
+(sleep 50 && curl http://13.229.154.38:3007/mine) &
+(sleep 60 && curl http://13.229.154.38:3007/mine) &
+
+sudo forever start dev/networkNode.js 5501 http://13.229.154.38:5501
+sudo forever start dev/networkNode.js 5502 http://13.229.154.38:5502
+sudo forever start dev/networkNode.js 5503 http://13.229.154.38:5503
+
+forever list
+forever stop 0

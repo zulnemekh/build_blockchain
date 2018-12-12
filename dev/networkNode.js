@@ -125,7 +125,7 @@ app.get('/mine', function(req, res) {
 
 	const nonce = bitcoin.proofOfWork(previousBlockHash, currentBlockData);
 	const blockHash = bitcoin.hashBlock(previousBlockHash, currentBlockData, nonce);
-
+	const minednodeAddress = bitcoin.hashLogin(bitcoin.currentNodeUrl);
 	// bitcoin.createNewTransaction(12.5, "00", nodeAddress);
 
 	const newBlock = bitcoin.createNewBlock(nonce, previousBlockHash, blockHash);
@@ -146,9 +146,9 @@ app.get('/mine', function(req, res) {
 			uri: bitcoin.currentNodeUrl + '/transaction/broadcast',
 			method: 'POST',
 			body: {
-				amount: 12.5,
+				amount: 1,
 				sender: "00",
-				recipient: nodeAddress
+				recipient: minednodeAddress
 			},
 			json: true
 		};
@@ -223,6 +223,67 @@ app.post('/register-node', function(req, res){
 
 	if (nodeNotAlreadyPresent && notCurrentNode) bitcoin.networkNodes.push(newNodeUrl);
 	res.json({node: 'New node registered with network successfully.'});
+});
+
+// deregister a node and broadcast it the network
+app.post('/deregister-and-broadcast-node', function(req, res) {
+	const nodeUrl = req.body.nodeUrl;
+	// if(bitcoin.networkNodes.indexOf(newNodeUrl) == -1) bitcoin.networkNodes.push(nodeUrl);
+
+	const deregNodesPromises = [];
+	bitcoin.networkNodes.forEach(networkNodeUrl => {
+		const requestOptions = {
+			uri: networkNodeUrl + '/deregister-node',
+			method: 'POST',
+			body: { nodeUrl: nodeUrl },
+			json: true
+		};
+
+		deregNodesPromises.push(rp(requestOptions));
+	});
+	
+	// Promise.all(deregNodesPromises).then(data => {
+	// 	const bulkRegisterOptions = {
+	// 		uri: nodeUrl + '/deregister-nodes-bulk',
+	// 		method: 'POST',
+	// 		body: {allNetworkNodes: [ ...bitcoin.networkNodes, bitcoin.currentNodeUrl] },
+	// 		json: true
+	// 	};
+
+	// 	return rp(bulkRegisterOptions);
+	// }).then(data =>{
+	// 	res.json({node: 'This node deregistered with network successfully.'});
+	// });
+	
+});
+// deregister a node with the network
+app.post('/deregister-node', function(req, res){
+	const nodeUrl = req.body.nodeUrl;
+	if (bitcoin.networkNodes.indexOf(nodeUrl) == -1)
+		res.json({node: 'This node already deleted!'});
+	else{
+		const notCurrentNode = bitcoin.currentNodeUrl !== nodeUrl;
+		// if (notCurrentNode) bitcoin.networkNodes.push(nodeUrl);
+		for( var i = 0; i < bitcoin.networkNodes.length-1; i++){ 
+		   if ( bitcoin.networkNodes[i] === nodeUrl) {
+		     bitcoin.networkNodes.splice(i, 1); 
+		   }
+		}
+		res.json({node: 'This node deregistered with network successfully.'});	
+	}
+	
+});
+// deregister multiple nodes at once
+app.post('/deregister-nodes-bulk', function(req, res){
+	const allNetworkNodes = req.body.allNetworkNodes;
+	allNetworkNodes.forEach(networkNodeUrl => {
+		for( var i = 0; i < bitcoin.networkNodes.length-1; i++){ 
+		   if ( bitcoin.networkNodes[i] === networkNodeUrl) {
+		     bitcoin.networkNodes.splice(i, 1); 
+		   }
+		}
+	});
+	res.json({note: 'Bulk registration successful.'});
 });
 
 // register multiple nodes at once
@@ -360,15 +421,15 @@ app.get('/create-trx', function(req, res) {
 	res.sendFile('./block-explorer/create.html', { root: __dirname });
 });
 
-app.get('/create-ledger', function(req, res) {
+app.get('/teacher', function(req, res) {
 	res.sendFile('./block-explorer/create_ledger.html', { root: __dirname });
 });
 
-app.get('/panel', function(req, res) {
+app.get('/student', function(req, res) {
 	res.sendFile('./block-explorer/student_panel.html', { root: __dirname });
 });
-app.get('/bet', function(req, res) {
-	res.sendFile('./block-explorer/bet.html', { root: __dirname });
+app.get('/nodes', function(req, res) {
+	res.sendFile('./block-explorer/nodes.html', { root: __dirname });
 });
 
 app.use(express.static(__dirname + '/public'));

@@ -59,7 +59,7 @@
                  	<div class="card"  style="padding: 30px;">
 		            
 		            	<!-- user_id, credit_hour, grade_point, grade_state, teacher_name, subject_name, date -->
-		                <form ng-submit="create_grade(subject_name, credit_hour, grade_point, grade_state, user_address)">
+		                <form name="myForm" ng-submit="create_grade(subject_name, credit_hour, grade_point, grade_state, user_address)">
 		                	<div class="form-group">
 							  <label>Course:</label>
 							  <select class="form-control" id="sel1" ng-model="subject_name">
@@ -72,7 +72,7 @@
 
 		                	<div class="form-group">
 		                		<label >User address:</label>
-		                        <input type="text" class="form-control" placeholder="User address" ng-model="user_address">
+		                        <input type="text" id="user_address" class="form-control" placeholder="User address" ng-model="user_address">
 		                    </div>
 		                    <div class="form-group">
 							  <label >Credit hour:</label>
@@ -104,6 +104,9 @@
 		                        class="btn btn-primary margin-auto btn-search">
 		                            Submit
 		                    </button>
+		                    <div ng-if="save_successfully" class="alert alert-success" role="alert">
+							  Transaction created and broadcast successfully.
+							</div>
 		                    <p ng-if="!user_info && initialSearchMade" class="no-data-text">
 		                        No data found for search.
 		                    </p>
@@ -126,6 +129,7 @@
             $scope.addressData = null;
             $scope.initialSearchMade = false;
             $scope.initial = false;
+            $scope.save_successfully = false;
  			
             
             $scope.toTransaction = function(address) {
@@ -175,8 +179,15 @@
                       postData, config)
                 .then(response => {
                     console.log(response.data)
+					confirm(response.data.note);
+					$( "#user_address" ).val('');
+							
                 });
             };
+			function sleep(ms) {
+			  return new Promise(resolve => setTimeout(resolve, ms));
+			}
+             
 
 
         });

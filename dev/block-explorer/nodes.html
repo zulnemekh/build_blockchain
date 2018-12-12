@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Block Explorer</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.6/angular.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+    <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+</head>
+
+<body ng-app="BlockExplorer">
+     <nav class="navbar navbar-toggleable-md navbar-inverse bg-inverse mb-4" style="background-color: #6c757d!important; padding-left: 100px;">
+       <div class="">
+            <a class="navbar-brand"><img width="80px" src="https://raw.githubusercontent.com/zulnemekh/zulnemekh.github.io/master/images/sine/sine.png"></a>
+        </div>                       
+    </nav>
+
+    <div class="container" ng-controller="MainController">
+	<div style="display: none;">
+		<img id="scream" width="50" height="50"
+src="https://raw.githubusercontent.com/zulnemekh/zulnemekh.github.io/master/images/sine/sine.png" alt="The Scream">
+	</div>
+        <div class="row">
+            <div class="col-md-8 offset-md-2">
+                <h1 id="page-title">Nodes</h1>
+            </div>
+        </div>
+
+        <div class="row">
+            <div style="center">
+			 <canvas id="nodeCanvas" style="background-color: white;" width="1100" height="800"></canvas>  
+              
+            </div>
+        </div>
+    </div>
+
+    <script>
+        var aa;
+        window.app = angular.module('BlockExplorer', []);
+
+        app.controller('MainController', function($scope, $http) {
+    
+            $scope.blockchain_nodes = null;
+            $scope.transaction = null;
+            $scope.addressData = null;
+            $scope.initialSearchMade = false;
+
+             $http.get(`/blockchain_info`)
+                .then(response => {
+                   $scope.blockchain_nodes = response.data;
+                    // aa.bitcoin.chain[aa.bitcoin.chain.length -1 ].index
+                    console.log($scope.blockchain_nodes.bitcoin.currentNodeUrl);
+                    console.log($scope.blockchain_nodes.bitcoin.networkNodes);
+                    arr=$scope.blockchain_nodes.bitcoin.networkNodes.reverse();                     
+                    arr.push($scope.blockchain_nodes.bitcoin.currentNodeUrl);
+
+                    // a1=["http://134.25.55.134:3004", "http://134.25.55.134:3005", "http://134.25.55.134:3002", "http://134.25.55.134:3001", "http://134.25.55.134:3002", "http://134.25.55.134:3001", "http://134.25.55.134:3002", "http://134.25.55.134:3001"];
+                    // nodes(a1);
+                    nodes(arr.reverse());
+                });
+
+          
+
+        });
+
+		function nodes(arr){
+		        var canvas = document.getElementById('nodeCanvas');
+				var width = 60;
+				var height = 60;
+				positionArr=[];
+				if (canvas.getContext) 
+				{
+				   var ctx = canvas.getContext("2d");
+			
+					startX=100;
+					startY=40;
+					for (var i = 0; i < arr.length; i++) {
+						if (i !=0 && (i)%3 == 0) {
+							startY += 200;
+							startX = 100;
+						}
+						drawNode(ctx, arr[i], startX,startY, i);
+						startX+=300;					
+					}
+					count=1;
+					for (var i = 0; i < positionArr.length; i++) {
+						x=positionArr[i][0];
+						y=positionArr[i][1];							
+						for (var j = count; j < positionArr.length; j++) {
+							x1=positionArr[j][0];
+							y1=positionArr[j][1];
+							ctx.beginPath();
+							ctx.moveTo(x, y);
+							ctx.lineTo(x1, y1);
+							ctx.lineWidth = 2;
+      						ctx.strokeStyle = '#344F5B';
+							ctx.stroke();
+
+						  
+					      var radius = 4;
+					      ctx.beginPath();
+					      ctx.arc(x1, y1, radius, 0, 2 * Math.PI, false);
+					      ctx.fillStyle = '#344F5B';
+					      ctx.fill();
+					      ctx.lineWidth = 1;
+					      ctx.strokeStyle = '#344F5B';
+					      ctx.stroke();
+						}
+						count++;
+						// break;
+					}
+
+						 var radius = 4;
+					      ctx.beginPath();
+					      ctx.arc(positionArr[0][0], positionArr[0][1], radius, 0, 2 * Math.PI, false);
+					      ctx.fillStyle = '#344F5B';
+					      ctx.fill();
+					      ctx.lineWidth = 1;
+					      ctx.strokeStyle = '#344F5B';
+					      ctx.stroke();
+				 }
+
+				 function drawNode(ctx, ip, x, y, me){
+				 	var centerX = x + width/2, centerY = y + height/2;
+					ctx.font = "24px Arial";
+					// style = '#0a93eb';
+					if (me == 0) {
+						ip = "currentNode";
+						style = '#f44242';
+					}
+					
+					ctx.fillStyle = "#0a93eb'";
+					ctx.fillText(ip, centerX-width, centerY-height/5);
+					ctx.stroke();
+					
+					ctx.lineWidth = 5;
+      				ctx.strokeStyle = '#f44242'; 
+					// ctx.fillRect(y, x, 10, 10);
+					ctx.rect(centerX, centerY, width, height);
+					ctx.stroke();
+
+					node1=[centerX+width/2,centerY+height/2];
+					positionArr.push(node1);
+				 }
+		}
+    </script>
+    <script>
+</script>
+
+
+    <style type="text/css">
+        html, body {
+            min-height: 100vh;
+            background-color: #e8e8e8;
+        }
+        .container {
+            padding-top: 50px;
+            padding-bottom: 50px;
+        }
+        #page-title {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        .table-title {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .table {
+            background-color: #ffffff;
+            box-shadow: 2px 2px 15px -3px rgba(0,0,0,0.75);
+        }
+        #balance-text {
+            text-align: center;
+            margin-top: -20px;
+            margin-bottom: 30px;
+        }
+        .margin-auto {
+            margin: auto;
+            display: block;
+        }
+        .btn-search {
+            margin-bottom: 50px;
+        }
+        .bold {
+            font-weight: 700;
+        }
+        .no-data-text {
+            color: red;
+            text-align: center;
+        }
+    </style>
+
+
+</body>
+
+</html>
