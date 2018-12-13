@@ -12,5 +12,10 @@ sudo forever start dev/networkNode.js 5501 http://13.229.154.38:5501
 sudo forever start dev/networkNode.js 5502 http://13.229.154.38:5502
 sudo forever start dev/networkNode.js 5503 http://13.229.154.38:5503
 
-forever list
-forever stop 0
+sudo forever start dev/networkNode.js 4504 http://3.112.4.71:4504
+sudo forever start dev/networkNode.js 4505 http://3.112.4.71:4505
+sudo forever start dev/networkNode.js 4506 http://3.112.4.71:4506
+
+
+sudo forever list
+sudo forever stop 0
