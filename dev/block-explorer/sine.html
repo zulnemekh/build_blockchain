@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Block Explorer</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.6/angular.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+    <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+</head>
+
+<body ng-app="BlockExplorer">
+     <nav class="navbar navbar-toggleable-md navbar-inverse bg-inverse mb-4" style="background-color: #6c757d!important; padding-left: 100px;">
+       <div class="">
+            <a class="navbar-brand"><img width="80px" src="https://raw.githubusercontent.com/zulnemekh/zulnemekh.github.io/master/images/sine/sine4.png"></a>
+        </div>                       
+    </nav>
+
+    <div class="container" ng-controller="MainController">
+    	<h3>INSTITUTIONS</h3>	
+    	<p style="color: gray"><i>create teacher and student accounts</i></p>
+      <div class="row">
+      	<div class="card text-black bg-success mb-3" style="max-width: 15rem; margin: 5px;"  ng-repeat="institution in institutions">
+           <div class="thumbnail"> <img alt="100%x200" data-src="holder.js/100%x200" src="https://raw.githubusercontent.com/zulnemekh/zulnemekh.github.io/master/images/sine/school.PNG" data-holder-rendered="true" style="height: 200px; width: 100%; display: block;"> <div class="caption"> <h3>{{institution.institution}}</h3> <p>{{institution.description}}</p> </div> </div>
+			</div>
+        </div>
+
+		
+
+        <br>
+        <br>
+		<h3>TEACHERS</h3>
+		<p style="color: gray"><i>only create grade for students</i></p>
+        <div class="row">
+        
+            <div class="card text-black bg-secondary mb-4" style="max-width: 15rem; margin: 5px;"  ng-repeat="teacher in teachers">
+           <div class="thumbnail"> <img alt="100%x200" data-src="holder.js/100%x200" src="https://raw.githubusercontent.com/zulnemekh/zulnemekh.github.io/master/images/sine/teacher.png" data-holder-rendered="true" style="height: 200px; width: 100%; display: block;"> <div class="caption"> <h3>{{teacher.full_name}}</h3> <p>Role: {{teacher.role}}</p> <p>{{teacher.description}}</p> </div> </div>
+			</div>
+        </div>
+  		  
+  		<br>
+        <br>
+		<h3>STUDENTS</h3>
+		<p style="color: gray"><i>can see own grades</i></p>
+        <div class="row">
+        
+            <div class="card text-black bg mb-4" style="max-width: 15rem; margin: 5px;"  ng-repeat="student in students">
+           <div class="thumbnail"> <img alt="100%x200" data-src="holder.js/100%x200" src="https://raw.githubusercontent.com/zulnemekh/zulnemekh.github.io/master/images/sine/student.png" data-holder-rendered="true" style="height: 200px; width: 100%; display: block;"> <div class="caption"> <h3>{{student.full_name}}</h3> <p>Role: {{student.role}}</p><p>{{student.description}}</p> </div> </div>
+			</div>
+        </div>
+  
+    </div>
+
+    <script>
+        var aa;
+        window.app = angular.module('BlockExplorer', []);
+
+        app.controller('MainController', function($scope, $http) {
+            $scope.blockchain_info = null;
+            $scope.institutions = null;
+            $scope.teachers = null;
+            $scope.students = null;
+            $scope.transaction = null;
+            $scope.addressData = null;
+            $scope.initialSearchMade = false;
+
+             $http.get(`/institutions`)
+                .then(response => {
+                    $scope.blockchain_info = response.data;
+                    $scope.institutions=$scope.blockchain_info.addressData.institutions;
+                    $scope.teachers=$scope.blockchain_info.addressData.teachers;
+                    $scope.students=$scope.blockchain_info.addressData.students;
+                    // length = $scope.blockchain_info.bitcoin.chain.length;
+                    // aa.bitcoin.chain[aa.bitcoin.chain.length -1 ].index
+                    console.log($scope.blockchain_info);
+                    console.log($scope.blockchain_info.addressData);
+                    console.log($scope.blockchain_info.addressData);
+                });
+
+          
+        });
+    </script>
+
+    <style type="text/css">
+        html, body {
+            min-height: 100vh;
+            background-color: #e8e8e8;
+        }
+        .container {
+            padding-top: 50px;
+            padding-bottom: 50px;
+        }
+        #page-title {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        .table-title {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .table {
+            background-color: #ffffff;
+            box-shadow: 2px 2px 15px -3px rgba(0,0,0,0.75);
+        }
+        #balance-text {
+            text-align: center;
+            margin-top: -20px;
+            margin-bottom: 30px;
+        }
+        .margin-auto {
+            margin: auto;
+            display: block;
+        }
+        .btn-search {
+            margin-bottom: 50px;
+        }
+        .bold {
+            font-weight: 700;
+        }
+        .no-data-text {
+            color: red;
+            text-align: center;
+        }
+    </style>
+
+
+</body>
+
+</html>

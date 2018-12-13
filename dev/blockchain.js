@@ -200,17 +200,29 @@ Blockchain.prototype.getAddressData = function(address) {
 
 Blockchain.prototype.getInstitution = function() {
 	const addressTransactions = [];
+	const teachers = [];
+	const students = [];
 	this.chain.forEach(block => {
 		block.transactions.forEach(transaction => {
 			if(typeof transaction.institution != 'undefined'){
 				addressTransactions.push(transaction);
 			}
+			if(transaction.role == 'teacher'){
+				teachers.push(transaction);
+			}
+			if(transaction.role == 'student'){
+				students.push(transaction);
+			}
+			
+			
 		});
 	});
 
 	
 	return {
-		addressTransactions: addressTransactions		
+		institutions: addressTransactions,
+		teachers: teachers,
+		students: students		
 	};
 };
 

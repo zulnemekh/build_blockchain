@@ -370,7 +370,7 @@ app.get('/address/:address', function(req, res) {
 app.get('/institutions', function(req, res) {	
 	const addressData = bitcoin.getInstitution();
 	res.json({
-		addressData: addressData
+		addressData
 	});
 
 });
@@ -413,12 +413,72 @@ app.get('/blockchain_info', function(req, res) {
 
 });
 
+// huleegdej bga guilgee bhgui uyd mine hiih shaardalgui gewel
+app.get('/minecheck', function(req, res) {
+
+	if(bitcoin.pendingTransactions.length > 1){
+		const lastBlock = bitcoin.getLastBlock();
+		const previousBlockHash =lastBlock['hash'];
+		const currentBlockData = {
+			transactions: bitcoin.pendingTransactions,
+			index: lastBlock['index'] + 1
+		};
+
+		const nonce = bitcoin.proofOfWork(previousBlockHash, currentBlockData);
+		const blockHash = bitcoin.hashBlock(previousBlockHash, currentBlockData, nonce);
+		const minednodeAddress = bitcoin.hashLogin(bitcoin.currentNodeUrl);
+		// bitcoin.createNewTransaction(12.5, "00", nodeAddress);
+
+		const newBlock = bitcoin.createNewBlock(nonce, previousBlockHash, blockHash);
+
+		const requestPromises = [];
+		bitcoin.networkNodes.forEach(networkNodeUrl => {
+			const requestOptions = {
+				uri: networkNodeUrl + '/recieve-new-block',
+				method: 'POST',
+				body: { newBlock: newBlock },
+				json: true
+			};
+			requestPromises.push(rp(requestOptions));
+		});
+
+		Promise.all(requestPromises).then(data => {
+			const requestOptions = {
+				uri: bitcoin.currentNodeUrl + '/transaction/broadcast',
+				method: 'POST',
+				body: {
+					amount: 1,
+					sender: "00",
+					recipient: minednodeAddress
+				},
+				json: true
+			};
+
+			return rp(requestOptions);
+		}).then(data => {
+			res.json({
+				note: "New block mined & broadcast successfully",
+				block: newBlock
+			});
+		});
+	}else{
+		res.json({
+				note: "No pendingTransactions."			
+			});
+	 
+	}//if end
+});
+
 app.get('/block-explorer', function(req, res) {
 	res.sendFile('./block-explorer/index.html', { root: __dirname });
 });
 
 app.get('/create-trx', function(req, res) {
 	res.sendFile('./block-explorer/create.html', { root: __dirname });
+});
+
+app.get('/sine', function(req, res) {
+	res.sendFile('./block-explorer/sine.html', { root: __dirname });
 });
 
 app.get('/teacher', function(req, res) {
@@ -428,6 +488,7 @@ app.get('/teacher', function(req, res) {
 app.get('/student', function(req, res) {
 	res.sendFile('./block-explorer/student_panel.html', { root: __dirname });
 });
+
 app.get('/nodes', function(req, res) {
 	res.sendFile('./block-explorer/nodes.html', { root: __dirname });
 });

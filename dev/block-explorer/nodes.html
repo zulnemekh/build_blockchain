@@ -12,7 +12,7 @@
 <body ng-app="BlockExplorer">
      <nav class="navbar navbar-toggleable-md navbar-inverse bg-inverse mb-4" style="background-color: #6c757d!important; padding-left: 100px;">
        <div class="">
-            <a class="navbar-brand"><img width="80px" src="https://raw.githubusercontent.com/zulnemekh/zulnemekh.github.io/master/images/sine/sine.png"></a>
+            <a class="navbar-brand"><img width="80px" src="https://raw.githubusercontent.com/zulnemekh/zulnemekh.github.io/master/images/sine/sine4.png"></a>
         </div>                       
     </nav>
 
@@ -123,22 +123,33 @@ src="https://raw.githubusercontent.com/zulnemekh/zulnemekh.github.io/master/imag
 
 				 function drawNode(ctx, ip, x, y, me){
 				 	var centerX = x + width/2, centerY = y + height/2;
-					ctx.font = "24px Arial";
-					// style = '#0a93eb';
-					if (me == 0) {
-						ip = "currentNode";
-						style = '#f44242';
-					}
 					
-					ctx.fillStyle = "#0a93eb'";
+					style = '#0a93eb';
+					style_node = '#f44242';
+					if (me == 0) {
+						// ip = "currentNode";
+						// style_node = '#42f448';
+						// style = '#f44242';
+						// fillStyle = style;
+						ctx.fillStyle = style_node;
+						ctx.font = "22px Arial";
+						ctx.fillText('currentNode', centerX-width, centerY-height+height/4);
+						ctx.stroke();
+					}
+					ctx.font = "24px Arial";
+					ctx.fillStyle = style;
 					ctx.fillText(ip, centerX-width, centerY-height/5);
 					ctx.stroke();
 					
 					ctx.lineWidth = 5;
-      				ctx.strokeStyle = '#f44242'; 
+      				ctx.strokeStyle = style_node; 
 					// ctx.fillRect(y, x, 10, 10);
 					ctx.rect(centerX, centerY, width, height);
 					ctx.stroke();
+					
+					// ctx.fillStyle = '#080f08';
+					// ctx.fillText('1234', centerX-width, centerY+height/2-10);
+					// ctx.stroke();
 
 					node1=[centerX+width/2,centerY+height/2];
 					positionArr.push(node1);
