@@ -2,6 +2,7 @@ const sha256 = require('sha256');
 const currentNodeUrl = process.argv[3];
 const uuid = require('uuid/v1');
 
+// blockchain buyu neg blockt hadgalagdah medeelel
 function Blockchain() {
 	this.chain = [];
 	this.pendingTransactions = [];
@@ -10,6 +11,7 @@ function Blockchain() {
 	this.createNewBlock(100, '0', '0');
 }
 
+// shine block uusgeh
 Blockchain.prototype.createNewBlock = function(nonce, previousBlockHash, hash) {
 	const newBlock = {
 		index: this.chain.length + 1,
@@ -107,6 +109,8 @@ Blockchain.prototype.hashBlock = function(previousBlockHash, currentBlockData, n
 	return hash;
 };
 
+// POW buyu nonce = 0 gesen toog negeer nemegduulj sha256-r encrypte hiij ehnii 4 temdegt
+// 0000 bwal nonce oldoloo gej uzeed blockiig nemne
 Blockchain.prototype.proofOfWork = function(previousBlockHash, currentBlockData) {
 	// bitcoin.hashBlock = function(previousBlockHash, currentBlockData, nonce);
 	let nonce = 0;
@@ -119,7 +123,8 @@ Blockchain.prototype.proofOfWork = function(previousBlockHash, currentBlockData)
 	return nonce;
 };
 
-
+//chain valid bga esehiig shalgah 
+//buh block-r guij currentBlock-n hash omnoh block-m hashtai adilhan bh ystoi!
 Blockchain.prototype.chainIsValid = function(blockchain) {
 	let validChain = true;
 
@@ -139,7 +144,7 @@ Blockchain.prototype.chainIsValid = function(blockchain) {
 		if (currentBlock['previousBlockHash'] !== prevBlock['hash']) validChain = false;
 	};
 
-	const genesisBlock = blockchain[0];
+	const genesisBlock = blockchain[0]; //genesisBlock gedeg n hamgiin ahnii block buyu previousBlockHash-gui block
 	const correctNonce = genesisBlock['nonce'] === 100;
 	const correctPreviousBlockHash = genesisBlock['previousBlockHash'] === '0';
 	const correctHash = genesisBlock['hash'] === '0';
@@ -150,6 +155,7 @@ Blockchain.prototype.chainIsValid = function(blockchain) {
 	return validChain;
 };
 
+//blockHash-r tuhain block-g awah
 Blockchain.prototype.getBlock = function(blockHash) {
 	let correctBlock = null;
 	this.chain.forEach(block => {

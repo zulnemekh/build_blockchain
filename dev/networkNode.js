@@ -27,6 +27,7 @@ app.post('/transaction', function(req, res){
 	res.json({ note: `Transaction will be added in block ${blockIndex}.`});
 })
 
+//transaction-uudiig busad node-ruugaa sync hiih
 app.post('/transaction/broadcast', function(req, res) {
 	console.log(req.body);
 	const newTransaction = bitcoin.createNewTransaction(req.body.amount, req.body.sender, req.body.recipient);
@@ -49,6 +50,7 @@ app.post('/transaction/broadcast', function(req, res) {
 	});
 })
 
+//shine user uusgeh for School grade
 app.post('/transaction/broadcast/create_user', function(req, res) {
 	console.log(req.body);
 	const newTransaction = bitcoin.createNewTransactionUser(req.body.full_name, req.body.last_name, req.body.birthday, req.body.role, req.body.user_name, req.body.user_id, req.body.description);
@@ -70,7 +72,7 @@ app.post('/transaction/broadcast/create_user', function(req, res) {
 		res.json({note: 'Transaction created and broadcast successfully.'});
 	});
 })
-
+//shine grade nemeh for School grade
 app.post('/transaction/broadcast/create_grade', function(req, res) {
 	console.log(req.body);
 	const newTransaction = bitcoin.createNewTransactionGrade(req.body.user_id, req.body.credit_hour, req.body.grade_point, req.body.grade_state, req.body.teacher_name, req.body.subject_name, req.body.date);
@@ -92,7 +94,7 @@ app.post('/transaction/broadcast/create_grade', function(req, res) {
 		res.json({note: 'Transaction created and broadcast successfully.'});
 	});
 })
-
+//shine surguuli nemeh for School grade
 app.post('/transaction/broadcast/institution', function(req, res) {
 	console.log(req.body);
 	const newTransaction = bitcoin.createNewTransactionInst(req.body.institution, req.body.description, req.body.division);
@@ -114,7 +116,7 @@ app.post('/transaction/broadcast/institution', function(req, res) {
 		res.json({note: 'Transaction created and broadcast successfully.'});
 	});
 })
-//mine a block
+//mine hiih ba mine hiisen node-d 1 bitcoin ogno
 app.get('/mine', function(req, res) {
 	const lastBlock = bitcoin.getLastBlock();
 	const previousBlockHash =lastBlock['hash'];
@@ -163,6 +165,7 @@ app.get('/mine', function(req, res) {
 
 });
 
+//mine hiigdsen block-g blockchain-d nemeh
 app.post('/recieve-new-block', function(req, res) {
 	const newBlock = req.body.newBlock;
 	const lastBlock = bitcoin.getLastBlock();

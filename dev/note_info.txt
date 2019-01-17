@@ -1,6 +1,7 @@
 http://localhost:3001/consensus
-	-
 
+	-
+//crontab deer mine hiih hugatsaar 10 sec tutamdaar tohiruulsan bdal
 (sleep 10 && curl http://13.229.154.38:3007/mine) &
 (sleep 20 && curl http://13.229.154.38:3007/mine) &
 (sleep 30 && curl http://13.229.154.38:3007/mine) &
@@ -8,14 +9,19 @@ http://localhost:3001/consensus
 (sleep 50 && curl http://13.229.154.38:3007/mine) &
 (sleep 60 && curl http://13.229.154.38:3007/mine) &
 
+//forever ashiglan server deer node-uudaa ajiluulah
 sudo forever start dev/networkNode.js 5501 http://13.229.154.38:5501
 sudo forever start dev/networkNode.js 5502 http://13.229.154.38:5502
 sudo forever start dev/networkNode.js 5503 http://13.229.154.38:5503
+sudo forever start dev/networkNode.js 5504 http://13.229.154.38:5504
 
 sudo forever start dev/networkNode.js 4504 http://3.112.4.71:4504
 sudo forever start dev/networkNode.js 4505 http://3.112.4.71:4505
 sudo forever start dev/networkNode.js 4506 http://3.112.4.71:4506
 
 
+//ene server deerajilaj bui port-uudiin jagsaalt
 sudo forever list
+
+// pid-r n stop hiih
 sudo forever stop 0
